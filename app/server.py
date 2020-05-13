@@ -55,20 +55,12 @@ async def homepage(request):
     return HTMLResponse(html_file.open().read())
 
 
-@app.route('/analyze', methods=['POST'])
+@app.route(’/analyze’, methods=[‘POST’])
 async def analyze(request):
-    img_data = await request.form()
-    img_bytes = await (img_data['file'].read())
-    img = open_image(BytesIO(img_bytes))
-    pred = learn.predict(img)[0]
-    for p in pred:
-        p.replace('_', ' ')
-    for p in pred:
-        p.title()
-    if pred == '[]':
-        pred = 'Could not recognize any classes, perhaps try another photo?'
-    return JSONResponse({'result': pred})
-
+data = await request.form()
+img_bytes = await (data[‘file’].read())
+img = open_image(BytesIO(img_bytes))
+return JSONResponse({‘result’: str(learn.predict(img)[0])})
 
 if __name__ == '__main__':
     if 'serve' in sys.argv:
